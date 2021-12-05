@@ -5,8 +5,8 @@ namespace STT.Persistence
 {
     internal class ApplicationDbContext : DbContext
     {
-        public DbSet<Watchlist> Watchlists { get; set; }
-        public DbSet<WatchlistItem> WatchlistItems { get; set; }
+        public DbSet<Watchlist>? Watchlists { get; set; }
+        public DbSet<WatchlistItem>? WatchlistItems { get; set; }
 
         public ApplicationDbContext(DbContextOptions options) : base(options) { }
 

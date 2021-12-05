@@ -10,7 +10,7 @@ using STT.Persistence;
 namespace STT.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20211205112012_InitialDatabaseFrame")]
+    [Migration("20211205174127_InitialDatabaseFrame")]
     partial class InitialDatabaseFrame
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,13 +26,15 @@ namespace STT.Persistence.Migrations
                     b.Property<Guid>("WatchlistId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
-                        .HasDefaultValue(new Guid("f17d2c42-adf0-4990-b31e-fdb30fee744a"))
                         .HasColumnName("Id");
 
-                    b.Property<DateTime>("CreatedOn")
+                    b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2021, 12, 5, 11, 20, 11, 963, DateTimeKind.Utc).AddTicks(4239));
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("ModifiedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -52,13 +54,11 @@ namespace STT.Persistence.Migrations
                     b.Property<Guid>("WatchlistItemId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
-                        .HasDefaultValue(new Guid("8eecde13-6d92-4fb4-a2de-678129551a59"))
                         .HasColumnName("Id");
 
-                    b.Property<DateTime>("CreatedOn")
+                    b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2021, 12, 5, 11, 20, 11, 971, DateTimeKind.Utc).AddTicks(6354));
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("FilmId")
                         .IsRequired()
@@ -67,6 +67,10 @@ namespace STT.Persistence.Migrations
 
                     b.Property<bool>("IsWatched")
                         .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset>("ModifiedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<Guid>("WatchlistId")
                         .HasColumnType("uniqueidentifier");

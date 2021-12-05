@@ -18,7 +18,7 @@ namespace STT.Persistence.Extensions
         {
             using var scope = applicationServices.CreateScope();
             using var context = scope.ServiceProvider.GetService<ApplicationDbContext>();
-            context.Database.Migrate();
+            context?.Database.Migrate();
         }
     }
 }

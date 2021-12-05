@@ -11,9 +11,10 @@ namespace STT.Persistence.Migrations
                 name: "Watchlists",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValue: new Guid("f17d2c42-adf0-4990-b31e-fdb30fee744a")),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2021, 12, 5, 11, 20, 11, 963, DateTimeKind.Utc).AddTicks(4239)),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    ModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
@@ -25,10 +26,11 @@ namespace STT.Persistence.Migrations
                 name: "WatchlistItems",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValue: new Guid("8eecde13-6d92-4fb4-a2de-678129551a59")),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     WatchlistId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     FilmId = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2021, 12, 5, 11, 20, 11, 971, DateTimeKind.Utc).AddTicks(6354)),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    ModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     IsWatched = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
