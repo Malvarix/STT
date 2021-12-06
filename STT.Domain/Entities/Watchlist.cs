@@ -8,7 +8,6 @@ namespace STT.Domain.Entities
         public Guid WatchlistId { get; set; }
         public string? Title { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
-        public DateTimeOffset ModifiedAt { get; set; }
         public Guid UserId { get; set; }
 
         public ICollection<WatchlistItem>? WatchlistItems { get; set; }

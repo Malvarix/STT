@@ -8,7 +8,6 @@ namespace STT.Domain.Entities
         public Guid WatchlistId { get; set; }
         public string? FilmId { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
-        public DateTimeOffset ModifiedAt { get; set; }
         public bool IsWatched { get; set; }
 
         public Watchlist? Watchlist { get; set; }

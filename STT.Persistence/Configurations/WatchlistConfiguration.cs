@@ -1,8 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore.ValueGeneration;
 using STT.Domain.Entities;
-using STT.Persistence.Generators;
+using STT.Persistence.Extensions;
 
 namespace STT.Persistence.Configurations
 {
@@ -12,8 +11,7 @@ namespace STT.Persistence.Configurations
         {
             builder.Property(p => p.WatchlistId)
                 .HasColumnName("Id")
-                .ValueGeneratedOnAdd()
-                .HasValueGenerator<GuidValueGenerator>()
+                .HasDefaultValueSql(Constants.MsSqlFunctions.NewId)
                 .IsRequired();
 
             builder.Property(p => p.Title)
@@ -21,13 +19,7 @@ namespace STT.Persistence.Configurations
                 .IsRequired();
 
             builder.Property(p => p.CreatedAt)
-                .ValueGeneratedOnAdd()
-                .HasValueGenerator<DateTimeOffsetGenerator>()
-                .IsRequired();
-
-            builder.Property(p => p.ModifiedAt)
-                .ValueGeneratedOnAddOrUpdate()
-                .HasValueGenerator<DateTimeOffsetGenerator>()
+                .HasDefaultValueSql(Constants.MsSqlFunctions.SysDateTimeOffset)
                 .IsRequired();
 
             builder.Property(p => p.UserId)
