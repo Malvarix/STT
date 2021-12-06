@@ -1,30 +1,28 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+using STT.Application.Clients.Implementations.Imdb.Models.Options;
 using STT.Application.Clients.Implementations.Imdb.Models.Request;
 using STT.Application.Clients.Implementations.Imdb.Models.Response;
 using STT.Application.Clients.Interfaces;
 using System;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace STT.Application.Clients.Implementations.Imdb
 {
     public class ImdbClient : IImdbClient
     {
-        public const string ApiUrl = "https://imdb-api.com";
+        private readonly IOptions<ImdbClientOptions> _options;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public string ApiKey { get; }
-
-        public ImdbClient(string apiKey)
+        public ImdbClient(IOptions<ImdbClientOptions> options, IHttpClientFactory httpClientFactory)
         {
-            if (string.IsNullOrWhiteSpace(apiKey))
-            {
-                throw new ArgumentNullException(nameof(apiKey));
-            }
-
-            ApiKey = apiKey;
+            _options = options ?? throw new ArgumentNullException(nameof(options));
+            _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
-        public async Task<SearchResponseModel> GetFilmAsync(SearchRequestModel searchRequestModel)
+        public async Task<SearchResponseModel> GetFilmAsync(SearchRequestModel searchRequestModel, CancellationToken cancellationToken)
         {
             const string SearchEndpointPath = "API/Search";
 
@@ -33,16 +31,15 @@ namespace STT.Application.Clients.Implementations.Imdb
                 throw new ArgumentException(nameof(searchRequestModel));
             }
 
-            var uri = $"{ApiUrl}/{SearchEndpointPath}/{ApiKey}/{searchRequestModel.Title}" 
+            var uri = $"{_options.Value.Url}/{SearchEndpointPath}/{_options.Value.Key}/{searchRequestModel.Title}" 
                 + (searchRequestModel.Year != null ? $" {searchRequestModel.Year}" : string.Empty);
 
-            var httpRequestMessage = new HttpRequestMessage
-            {
-                RequestUri = new Uri(uri),
-                Method = HttpMethod.Get
-            };
+            HttpResponseMessage httpResponseMessage;
 
-            var httpResponseMessage = await new HttpClient().SendAsync(httpRequestMessage);
+            using (var client = _httpClientFactory.CreateClient())
+            {
+                httpResponseMessage = await client.GetAsync(uri, cancellationToken);
+            }
 
             httpResponseMessage.EnsureSuccessStatusCode();
 

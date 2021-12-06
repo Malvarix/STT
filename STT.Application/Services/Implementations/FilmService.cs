@@ -2,6 +2,7 @@
 using STT.Application.Clients.Implementations.Imdb.Models.Response;
 using STT.Application.Clients.Interfaces;
 using STT.Application.Services.Interfaces;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace STT.Application.Services.Implementations
@@ -15,9 +16,9 @@ namespace STT.Application.Services.Implementations
             _imdbClient = imdbClient;
         }
 
-        public async Task<SearchResponseModel> GetFilmAsync(SearchRequestModel searchRequestModel)
+        public async Task<SearchResponseModel> GetFilmAsync(SearchRequestModel searchRequestModel, CancellationToken cancellationToken)
         {
-            return await _imdbClient.GetFilmAsync(searchRequestModel);
+            return await _imdbClient.GetFilmAsync(searchRequestModel, cancellationToken);
         }
     }
 }
