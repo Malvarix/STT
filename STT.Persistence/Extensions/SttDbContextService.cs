@@ -4,11 +4,11 @@ using System;
 
 namespace STT.Persistence.Extensions
 {
-    public static class ApplicationDbContextService
+    public static class SttDbContextService
     {
-        public static IServiceCollection AddApplicationDbContext(this IServiceCollection services, string connectionString)
+        public static IServiceCollection AddDbContext(this IServiceCollection services, string connectionString)
         {
-            return services.AddDbContext<ApplicationDbContext>(options =>
+            return services.AddDbContext<SttDbContext>(options =>
             {
                 options.UseSqlServer(connectionString);
             });
@@ -17,7 +17,7 @@ namespace STT.Persistence.Extensions
         public static void DatabaseMigrate(this IServiceProvider applicationServices)
         {
             using var scope = applicationServices.CreateScope();
-            using var context = scope.ServiceProvider.GetService<ApplicationDbContext>();
+            using var context = scope.ServiceProvider.GetService<SttDbContext>();
             context?.Database.Migrate();
         }
     }
