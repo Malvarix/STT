@@ -6,14 +6,22 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using Newtonsoft.Json.Serialization;
+using STT.Application.AutoMapperProfiles;
 using STT.Application.Clients.Implementations.Imdb;
+using STT.Application.Clients.Implementations.Imdb.Models.Options;
 using STT.Application.Clients.Implementations.Imdb.Models.Request;
 using STT.Application.Clients.Implementations.Imdb.Validators;
 using STT.Application.Clients.Interfaces;
+using STT.Application.Dto.Request;
+using STT.Application.DtoValidators.Request;
 using STT.Application.Services.Implementations;
 using STT.Application.Services.Interfaces;
 using STT.Persistence.Extensions;
+using STT.Persistence.Repositories.Implementations;
+using STT.Persistence.Repositories.Interfaces;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Net.Mime;
 
 namespace STT.API
 {
@@ -28,19 +36,32 @@ namespace STT.API
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddApplicationDbContext(Configuration["STT:ConnectionString"]);
+            services.AddDbContext(Configuration["STT:ConnectionString"]);
 
-            services.AddControllers()
-                .AddNewtonsoftJson(options =>
-                {
-                    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-                })
-                .AddFluentValidation();
+            services.AddAutoMapper(typeof(DtoToEntityMappingProfile), typeof(EntityToDtoMappingProfile));
 
+            services.AddControllers();
+            services.AddHttpClient(nameof(HttpClient), client =>
+            {
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+            });
+
+            services.AddFluentValidation();
             services.AddTransient<IValidator<SearchRequestModel>, SearchRequestModelValidator>();
+            services.AddTransient<IValidator<CreateWatchlistItemRequestDto>, CreateWatchlistItemRequestDtoValidator>();
+            services.AddTransient<IValidator<CreateWatchlistRequestDto>, CreateWatchlistRequestDtoValidator>();
+            services.AddTransient<IValidator<GetAllWatchlistItemsRequestDto>, GetAllWatchlistItemsRequestDtoValidator>();
+            services.AddTransient<IValidator<UpdateWatchlistItemIsWatchedRequestDto>, UpdateWatchlistItemIsWatchedRequestDtoValidator>();
 
-            services.AddScoped<IImdbClient>(x => new ImdbClient(Configuration["ImdbApiKey"]));
+            services.AddOptions();
+            services.Configure<ImdbClientOptions>(Configuration.GetSection("ImdbApi"));
+            
+            services.AddScoped<IImdbClient, ImdbClient>();
+
+            services.AddScoped<IWatchlistRepository, WatchlistRepository>();
+
             services.AddScoped<IFilmService, FilmService>();
+            services.AddScoped<IWatchlistService, WatchlistService>();
 
             services.AddSwaggerGen(c =>
             {

@@ -2,6 +2,7 @@
 using STT.Application.Clients.Implementations.Imdb.Models.Request;
 using STT.Application.Clients.Implementations.Imdb.Models.Response;
 using STT.Application.Services.Interfaces;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace STT.API.Controllers
@@ -19,9 +20,11 @@ namespace STT.API.Controllers
 
         [HttpGet]
         [Route(nameof(GetFilm))]
-        public async Task<ActionResult<SearchResponseModel>> GetFilm([FromQuery] SearchRequestModel searchRequestModel)
+        public async Task<ActionResult<SearchResponseModel>> GetFilm(
+            [FromQuery] SearchRequestModel searchRequestModel, 
+            CancellationToken cancellationToken)
         {
-            return Ok(await _filmService.GetFilmAsync(searchRequestModel));
+            return Ok(await _filmService.GetFilmAsync(searchRequestModel, cancellationToken));
         }
     }
 }
