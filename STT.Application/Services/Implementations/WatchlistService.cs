@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using STT.Application.Dto.Request;
 using STT.Application.Dto.Response;
 using STT.Application.Services.Interfaces;
 using STT.Domain.Entities;
-using STT.Persistence.Repositories.Interfaces;
+using STT.Persistence;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,13 +16,13 @@ namespace STT.Application.Services.Implementations
     public class WatchlistService : IWatchlistService
     {
         private readonly IMapper _mapper;
-        private readonly IWatchlistRepository _watchlistRepository;
+        private readonly SttDbContext _context;
 
         public WatchlistService(IMapper mapper, 
-                                IWatchlistRepository watchlistRepository)
+                                SttDbContext sttDbContext)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _watchlistRepository = watchlistRepository ?? throw new ArgumentNullException(nameof(watchlistRepository));
+            _context = sttDbContext ?? throw new ArgumentNullException(nameof(_context));
         }
 
         public async Task<Guid> CreateWatchlistItemAsync(
@@ -34,7 +36,10 @@ namespace STT.Application.Services.Implementations
 
             var watchlistItem = _mapper.Map<WatchlistItem>(createWatchlistItemRequestDto);
 
-            return await _watchlistRepository.CreateWatchlistItemAsync(watchlistItem, cancellationToken);
+            await _context.AddAsync(watchlistItem, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return watchlistItem.WatchlistItemId;
         }
 
         public async Task<Guid> CreateWatchlistAsync(
@@ -48,7 +53,10 @@ namespace STT.Application.Services.Implementations
 
             var watchlist = _mapper.Map<Watchlist>(createWatchlistRequestDto);
 
-            return await _watchlistRepository.CreateWatchlistAsync(watchlist, cancellationToken);
+            await _context.AddAsync(watchlist, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return watchlist.WatchlistId;
         }
 
         public async Task<IEnumerable<GetWatchlistItemResponseDto>> GetAllWatchlistItemsAsync(
@@ -60,12 +68,22 @@ namespace STT.Application.Services.Implementations
                 throw new ArgumentNullException(nameof(getAllWatchlistItemsRequestDto));
             }
 
-            var watchlistItems = await _watchlistRepository.GetAllWatchlistItemsAsync(
-                getAllWatchlistItemsRequestDto.WatchlistId, 
-                getAllWatchlistItemsRequestDto.UserId, 
-                cancellationToken);
+            var watchlist = await _context.Watchlists
+                .Include(i => i.WatchlistItems)
+                .FirstOrDefaultAsync(i => i.WatchlistId == getAllWatchlistItemsRequestDto.WatchlistId 
+                                            && i.UserId == getAllWatchlistItemsRequestDto.UserId, cancellationToken);
 
-            return _mapper.Map<IEnumerable<GetWatchlistItemResponseDto>>(watchlistItems);
+            if (watchlist == null)
+            {
+                throw new NullReferenceException(nameof(watchlist));
+            }
+
+            if (watchlist.WatchlistItems == null || !watchlist.WatchlistItems.Any())
+            {
+                return new List<GetWatchlistItemResponseDto>();
+            }
+
+            return _mapper.Map<IEnumerable<WatchlistItem>, IEnumerable<GetWatchlistItemResponseDto>>(watchlist.WatchlistItems);
         }
 
         public async Task<bool> UpdateWatchlistItemStateAsync(
@@ -77,10 +95,23 @@ namespace STT.Application.Services.Implementations
                 throw new ArgumentNullException(nameof(updateWatchlistItemIsWatchedRequestDto));
             }
 
-            var watchlistItem = await _watchlistRepository.GetWatchlistItemAsync(updateWatchlistItemIsWatchedRequestDto.WatchlistItemId, cancellationToken);
-            watchlistItem.IsWatched = updateWatchlistItemIsWatchedRequestDto.IsWatched; 
+            var watchlistItem = await _context.WatchlistItems
+                .FirstOrDefaultAsync(i => i.WatchlistItemId == updateWatchlistItemIsWatchedRequestDto.WatchlistItemId, cancellationToken);
 
-            return await _watchlistRepository.UpdateWatchlistItem(watchlistItem, cancellationToken);
+            if (watchlistItem == null)
+            {
+                throw new NullReferenceException(nameof(watchlistItem));
+            }
+
+            watchlistItem.IsWatched = updateWatchlistItemIsWatchedRequestDto.IsWatched;
+
+            return await Task.Run(async () =>
+            {
+                _context.Update(watchlistItem);
+                await _context.SaveChangesAsync(cancellationToken);
+
+                return true;
+            }, cancellationToken);
         }
     }
 }

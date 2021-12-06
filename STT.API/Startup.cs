@@ -17,8 +17,6 @@ using STT.Application.DtoValidators.Request;
 using STT.Application.Services.Implementations;
 using STT.Application.Services.Interfaces;
 using STT.Persistence.Extensions;
-using STT.Persistence.Repositories.Implementations;
-using STT.Persistence.Repositories.Interfaces;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Mime;
@@ -57,8 +55,6 @@ namespace STT.API
             services.Configure<ImdbClientOptions>(Configuration.GetSection("ImdbApi"));
             
             services.AddScoped<IImdbClient, ImdbClient>();
-
-            services.AddScoped<IWatchlistRepository, WatchlistRepository>();
 
             services.AddScoped<IFilmService, FilmService>();
             services.AddScoped<IWatchlistService, WatchlistService>();

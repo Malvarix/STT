@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using STT.Domain.Entities;
-using System.Reflection;
 
 namespace STT.Persistence
 {
