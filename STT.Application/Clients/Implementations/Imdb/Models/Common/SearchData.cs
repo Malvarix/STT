@@ -1,9 +1,8 @@
-﻿using STT.Application.Clients.Implementations.Imdb.Models.Common;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace STT.Application.Clients.Implementations.Imdb.Models.Response
+namespace STT.Application.Clients.Implementations.Imdb.Models.Common
 {
-    public class SearchResponseModel
+    public class SearchData
     {
         public string? SearchType { get; set; }
         public string? Expression { get; set; }
