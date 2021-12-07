@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using STT.Application.Clients.Implementations.Imdb.Models.Request;
-using STT.Application.Clients.Implementations.Imdb.Models.Response;
+using STT.Application.Clients.Implementations.Imdb.Models.Common;
+using STT.Application.Dto.Request;
 using STT.Application.Services.Interfaces;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,12 +19,12 @@ namespace STT.API.Controllers
         }
 
         [HttpGet]
-        [Route(nameof(GetFilm))]
-        public async Task<ActionResult<SearchResponseModel>> GetFilm(
-            [FromQuery] SearchRequestModel searchRequestModel, 
+        [Route(nameof(SearchFilm))]
+        public async Task<ActionResult<SearchData>> SearchFilm(
+            [FromQuery] SearchFilmRequestDto searchFilmRequestDto, 
             CancellationToken cancellationToken)
         {
-            return Ok(await _filmService.GetFilmAsync(searchRequestModel, cancellationToken));
+            return Ok(await _filmService.SearchFilmAsync(searchFilmRequestDto, cancellationToken));
         }
     }
 }
