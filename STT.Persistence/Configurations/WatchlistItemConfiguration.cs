@@ -28,6 +28,10 @@ namespace STT.Persistence.Configurations
             builder.Property(p => p.IsWatched)
                 .IsRequired();
 
+            builder.Property(p => p.MonthRecommendationsCount)
+                .HasDefaultValueSql("0")
+                .IsRequired();
+
             builder.HasOne(p => p.Watchlist);
         }
     }

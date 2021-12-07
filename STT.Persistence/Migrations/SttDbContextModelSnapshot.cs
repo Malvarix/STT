@@ -66,6 +66,11 @@ namespace STT.Persistence.Migrations
                     b.Property<bool>("IsWatched")
                         .HasColumnType("bit");
 
+                    b.Property<byte>("MonthRecommendationsCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint")
+                        .HasDefaultValueSql("0");
+
                     b.Property<Guid>("WatchlistId")
                         .HasColumnType("uniqueidentifier");
 

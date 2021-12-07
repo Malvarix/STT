@@ -9,6 +9,7 @@ namespace STT.Domain.Entities
         public string? FilmId { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
         public bool IsWatched { get; set; }
+        public byte MonthRecommendationsCount { get; set; }
 
         public Watchlist? Watchlist { get; set; }
     }

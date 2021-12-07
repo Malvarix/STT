@@ -29,7 +29,8 @@ namespace STT.Persistence.Migrations
                     WatchlistId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     FilmId = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false, defaultValueSql: "SYSDATETIMEOFFSET()"),
-                    IsWatched = table.Column<bool>(type: "bit", nullable: false)
+                    IsWatched = table.Column<bool>(type: "bit", nullable: false),
+                    MonthRecommendationsCount = table.Column<byte>(type: "tinyint", nullable: false, defaultValueSql: "0")
                 },
                 constraints: table =>
                 {

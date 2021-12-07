@@ -10,7 +10,7 @@ using STT.Persistence;
 namespace STT.Persistence.Migrations
 {
     [DbContext(typeof(SttDbContext))]
-    [Migration("20211206120627_InitialDatabaseFrame")]
+    [Migration("20211206200522_InitialDatabaseFrame")]
     partial class InitialDatabaseFrame
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -67,6 +67,11 @@ namespace STT.Persistence.Migrations
 
                     b.Property<bool>("IsWatched")
                         .HasColumnType("bit");
+
+                    b.Property<byte>("MonthRecommendationsCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint")
+                        .HasDefaultValueSql("0");
 
                     b.Property<Guid>("WatchlistId")
                         .HasColumnType("uniqueidentifier");
